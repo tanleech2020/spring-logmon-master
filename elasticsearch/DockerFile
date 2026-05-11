@@ -1,0 +1,14 @@
+FROM elasticsearch:7.6.0
+
+USER root
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENV discovery.type=single-node
+ENV xpack.security.enabled=false
+ENV ES_JAVA_OPTS="-Xms512m -Xmx512m"
+
+EXPOSE 9200
+
+ENTRYPOINT ["/entrypoint.sh"]
