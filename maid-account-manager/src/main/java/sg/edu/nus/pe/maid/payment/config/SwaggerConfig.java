@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-
+/*
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
@@ -28,6 +28,18 @@ public class SwaggerConfig {
                         .license(new License()
                                 .name("Apache License Version 2.0")
                                 .url("https://www.apache.org/licenses/LICENSE-2.0")));
+    }
+    */
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+                .addServersItem(new Server()
+                        .url("https://spring-logmon-master-production.up.railway.app")
+                        .description("Railway Production Server"))
+                .addServersItem(new Server()
+                        .url("http://localhost:8080")
+                        .description("Local Development Server"));
     }
 
 
