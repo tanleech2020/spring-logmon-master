@@ -1,0 +1,63 @@
+version: '3.7'
+
+services:
+  maid-account-manager:
+#    build: 
+#      context: .
+#      dockerfile: Dockerfile
+    image: maid-account-manager:1.0
+    hostname: maid-account-manager
+    container_name: maid-account-manager
+    networks:
+      - logmonnet
+    ports:
+      - "8080:8080"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
+    hostname: elasticsearch
+    container_name: elasticsearch
+    networks:
+      - logmonnet
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.6.0
+    hostname: kibana
+    container_name: kibana
+    environment:
+      SERVER_NAME: kibana
+      SERVER_BASEPATH: /kibana
+      ELASTICSEARCH_URL: http://elasticsearch:9200/
+      ES_JAVA_OPTS: "-Xms1g -Xmx2g"
+      SERVER_PUBLICBASEURL: https://lctan-alienware.tail759e82.ts.net/kibana  
+    networks:
+      - logmonnet
+    ports:
+      - "5601:5601"
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+  
+  logstash:
+    build: ../logstash
+    hostname: logstash
+    container_name: logstash
+    networks:
+      - logmonnet
+    command: logstash -f /conf/logstash-maid-account-manager.conf
+    ports:
+      - "5044:5044"
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+
+networks:
+  logmonnet:
+    driver: "bridge"
